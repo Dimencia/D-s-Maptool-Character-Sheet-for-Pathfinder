@@ -1,0 +1,25 @@
+[h: detailNames = "Age, Movement, Resistances, MaxBaB, TemporaryExperience"]
+[h: detailProperties = "Age, Movement, Resistances, MaxBaB, TemporaryExperience"]
+[h: propNames = "Age, Str, Dex, Con, Int, Wis, Cha, Luc, Lvl, MaxHP, HP, AC, CMD, Init, Movement, Resistances, KiPool, TemporaryExperience, AttackMod, AtkMod, DamageMod, DmgMod, MaxBaB"]
+
+/self [dialog("CharSheetTest"): {
+<html>
+	<head>
+		<title>Character Sheet</title>
+	</head>
+	<body>
+		<!--First a pane on the side with dumb details
+		We use detailNames as display and detailProperties as the getProperty-->
+		<table border="1">
+        [foreach(prop, propNames, ""), code: {
+			<tr>
+				<td>
+					<b>[r: prop]</b>
+				</td>
+				<td>[r: getProperty(prop)]</td>
+			</tr>
+        }]
+		</table>
+	</body>
+</html>
+}]

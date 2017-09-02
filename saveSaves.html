@@ -1,0 +1,44 @@
+[dialog("saveInput2", "width=500; height=400;"): {
+
+<html>
+<head>
+<title>Save Editor</title>
+<link rel="stylesheet" type="text/css" href="CharSheet_css@[r: getMacroLocation()]">
+<meta name="input" content="true">
+</head>
+<body>
+<form name="inputSaves" action="[r:macroLinkText('SaveSaveValues@Lib:Test')]">
+
+<table class="mainTables"> <!-- Start saves table -->
+<tr><th></th><th>Base</th><th>Stat</th><th>Luck</th><th>Items/Abilities</th><th>Buffs</th></tr>
+<tr class="oddRow"><td><b>Fortitude</b></td>
+<td><input name="baseFort" value="[r: getProperty('baseFort')]"></input></td>
+<td>[r:conMod = floor((if(Con<10,Con-1,Con)-10)/2)]</td>
+<td>[r:getProperty("Luc")]</td>
+<td><input name="fortMisc" value="[r: getProperty('fortMisc')]"></input></td>
+<td>[r: getProperty("fortMod")]</td>
+</tr>
+<tr class="evenRow"><td><b>Reflex</b></td>
+<td><input name="baseRef" value="[r: getProperty('baseRef')]"></input></td>
+<td>[r:dexMod = floor((if(Dex<10,Dex-1,Dex)-10)/2)]</td>
+<td>[r:getProperty("Luc")]</td>
+<td><input name="refMisc" value="[r: getProperty('refMisc')]"></input></td>
+<td>[r: getProperty("refMod")]</td>
+</tr>
+<tr class="oddRow"><td><b>Will</b></td>
+<td><input name="baseWill" value="[r: getProperty('baseWill')]"></input></td>
+<td>[r:wisMod = floor((if(Wis<10,Wis-1,Wis)-10)/2)]</td>
+<td>[r:getProperty("Luc")]</td>
+<td><input name="willMisc" value="[r: getProperty('willMisc')]"></input></td>
+<td>[r: getProperty("willMod")]</td>
+</tr>
+<tr class="evenRow"><td><b>CMD</b></td>
+<td><input name="CMD" value="[r: CMD]"></input></td>
+</tr>
+<tr><input type="submit" value="save" name="submit"></input>
+</table> <!-- End Stats table -->
+</form>
+</body>
+</html>
+
+}]

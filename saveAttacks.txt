@@ -1,0 +1,40 @@
+[h: AttackName = indexValueStrProp(macro.args,0)]
+[h: Attacks = getProperty("attackNames")]
+[h: Attacks = listAppend(Attacks,AttackName)]
+
+[for (i, 1, countStrProp(macro.args), 1, ""), code: {
+[h: prop=indexKeyStrProp(macro.args,i)]
+[h: setProperty("_"+AttackName+"_"+prop, indexValueStrProp(macro.args,i))]
+}]
+[h: setProperty("attackNames",Attacks)]
+[macro("AttacksSheet@Lib:Test"): ""]
+[abort(0)]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<td><input name="attack[r:i]AttackBonus" value="[r:AttackMod+AtkMod-attackDecrement]"></input> for</td>
+<td><input name="attack[r:i]DamageDice" value="[r:AttackDamageBase]"></input>+</td>
+<td><input name="attack[r:i]DamageBonus" value="[r:DamageMod+DmgMod]"></input> Damage at</td>
+<td><input name="attack[r:i]Range" value="5"></input>Range</td>
+
+<tr><th>Attack Name:</th><td><input name="AttackName" value="Basic Attack"></input></td></tr>
+<tr><th>Number of Attacks:</th><td><input name="numAttacks" value="1"></input></td></tr>
+<tr><th>Base Damage Dice:</th><td><input name="AttackDamageBase" value="2d10"></input></td></tr>
+<tr><th>Cost Amount:</th><td><input name="costValue" value=""></input></td></tr>
+<tr><th>Cost Pool:</th><td><input name="costVariable" value=""></input></td></tr>

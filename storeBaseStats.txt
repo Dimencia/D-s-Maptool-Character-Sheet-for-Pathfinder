@@ -1,0 +1,12 @@
+<!-- We should be receiving a propertylist of all the stats 
+Note that only the 'value' of the pair is useful, then we getProperty on it
+-->
+[h: baseStats = ""]
+[for (i, 0, countStrProp(macro.args), 1, ""), code: {
+[h: prop=indexValueStrProp(macro.args,i)]
+[h: baseStats = baseStats+prop+"="+getProperty(prop)+";"]
+}]
+[h: setProperty("baseStats",baseStats)]
+[macro("CharSheet@Lib:Test"): ""]
+[abort(0)]
+

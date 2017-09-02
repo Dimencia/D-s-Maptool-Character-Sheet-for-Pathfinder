@@ -1,0 +1,108 @@
+[h: callingToken = getImpersonated()]
+[h: setProperty("lastSheetTab","CombatSheet@Lib:Test")]
+[frame("CharSheetTest"): {
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="CharSheet_css@[r: getMacroLocation()]">
+<link rel='onChangeSelection' type='macro' href='[r:macroLinkText("changeTarget@Lib:Test")]'> 
+<meta name="input" content="true">
+<title>Character Sheet</title>
+</head>
+<body>
+<table> <!--Over-table to make sure everything is inline-->
+<tr><td>
+<table> <!--Start Tabs table -->
+<tr>
+<td>[r:macroLink("Overview","CharSheet@Lib:Test")]</td>
+<td>[r:macroLink("Attacks","AttacksSheet@Lib:Test")]</td>
+<td border=1px>Combat Helper</td>
+</tr>
+</table> <!-- End Tabs table -->
+</td></tr>
+<tr><td>
+[h: targets=getProperty("targets")]
+<table class="mainTables"> <!-- Start target table -->
+
+<tr><th colspan="[r: 1+listCount(targets)]" align="center" border=1>Targets</th></tr>
+<tr class="oddRow" align="center">
+<th>Name</th>
+[for (i, 0, listCount(targets), 1, ""), code: {
+[h: fontSize = 3]
+[h: length=length(getName(listGet(targets,i)))]
+[h: fontSize = if(length > 5,2,fontSize)]
+[h: fontSize = if(length > 10,1,fontSize)]
+<td><font size="[r:fontSize]">[r:getName(listGet(targets,i))]</font></td>
+}]
+</tr>
+<tr class="evenRow" align="center">
+<td></td>
+[for (i, 0, listCount(targets), 1, ""), code: {
+<td align="center"><img src="[r, token(listGet(targets,i)): getTokenImage(25)]" class="targetIcons"></td>
+}]
+</tr>
+<tr class="oddRow" align="center">
+<th>Distance</th>
+[for (i, 0, listCount(targets), 1, ""), code: {
+[h: Distance = floor(getDistance(callingToken, 1, listGet(targets,i), "NO_GRID"))]
+
+[h: Distance = Distance-(eval(getSize(listGet(targets,i)))*2)]
+<td>[r: Distance]</td>
+}]
+</tr>
+<tr class="evenRow" align="center">
+<th>Resistances</th>
+[for (i, 0, listCount(targets), 1, ""), code: {
+<td>[r: getProperty("Resistances",listGet(targets,i))]</td>
+}]
+</tr>
+<tr class="oddRow" align="center">
+<th>Immunities</th>
+[for (i, 0, listCount(targets), 1, ""), code: {
+<td>[r: getProperty("Immunities",listGet(targets,i))]</td>
+}]
+</tr>
+<tr class="evenRow" align="center">
+<th>DR</th>
+[for (i, 0, listCount(targets), 1, ""), code: {
+<td>[r: getProperty("DR",listGet(targets,i))]</td>
+}]
+</tr>
+<tr class="oddRow" align="center">
+<th>AC</th>
+[for (i, 0, listCount(targets), 1, ""), code: {
+<td>[r: getProperty("AC",listGet(targets,i))]</td>
+}]
+</tr>
+<!-- And attacks on the same table -->
+<tr><th colspan="[r: 1+listCount(targets)]" align="center" border=1>Attacks</th></tr>
+[h: AttackNames = getProperty("AttackNames")]
+[h: class = "oddRow"]
+[for(i, 0, listCount(AttackNames), 1, ""), code: {
+[h: propPrefix = "_"+listGet(AttackNames,i)+"_"]
+<tr class="[r:class]"><th>[r:listGet(AttackNames,i)]</th>
+[h, macro("getCombatAttackString@Lib:Test"):listGet(AttackNames,i)]
+[r:macro.return]
+[h: class = if(class=="oddRow", "evenRow", "oddRow")]
+</tr>
+}]
+
+</table> <!-- End Target table -->
+</td></tr>
+</table>
+</body>
+</html>
+}]
+
+
+
+
+<!--
+
+[t: if(AttackCritical,DamageRoll*CritMult+DamageBonus*CritMult+CritDamageBonus-targetDRToApply,DamageRoll+DamageBonus-targetDRToApply)]
+
+
+[h: listAppend(newArguments,AttackName)]
+[h: listAppend(newArguments,Target)]
+[h: listAppend(newArguments,InProgressRemainingAttacks)]
+
+-->

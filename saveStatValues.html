@@ -1,0 +1,38 @@
+<!-- 
+Our Paramaters in a string property list will be: 
+Str
+Dex
+Con
+Int
+Wis
+Cha
+Luc
+KiPool
+
+
+[h: targetSize = getSize(listGet(targets,i))]
+[macro("calculateSizeMod@Lib:Test"):targetSize]
+[h: targetSizeMod=macro.return]
+ -->
+
+[r: setProperty("editingStats",!getProperty("editingStats"))]
+[h,if(getProperty("editingStats")),CODE:
+{
+[macro("CharSheet@Lib:Test"): ""][abort(0)]
+};
+{
+/self Saving stats... Arguments size is [r:countStrProp(macro.args)]
+[h: Str = getStrProp(macro.args, "Str")]
+[h: Dex = getStrProp(macro.args, "Dex")]
+[h: Con = getStrProp(macro.args, "Con")]
+[h: Int = getStrProp(macro.args, "Int")]
+[h: Wis = getStrProp(macro.args, "Wis")]
+[h: Cha = getStrProp(macro.args, "Cha")]
+[h: Luc = getStrProp(macro.args, "Luc")]
+[h: KiPool = getStrProp(macro.args, "KiPool")]
+[macro("CharSheet@Lib:Test"): ""]
+[abort(0)]
+}]
+
+
+

@@ -1,0 +1,33 @@
+[dialog("statInput", "width=200; height=400;"): {
+
+<html>
+<head>
+<title>Stat Editor</title>
+<link rel="stylesheet" type="text/css" href="CharSheet_css@[r: getMacroLocation()]">
+<meta name="input" content="true">
+</head>
+<body>
+<form name="inputStats" action="[r:macroLinkText('SaveStatValues@Lib:Test')]">
+
+<table class="mainTables"> <!-- Start stats table -->
+<tr><th colspan=2>Stats</th></tr>
+[h: class = "oddRow"]
+[for (i, 0, listCount(macro.args), 1, ""), code: {
+[h: prop=listGet(macro.args,i)]
+<tr class="[r:class]">
+<td>
+<b><label for="[r: prop]">[r:prop]</label></b>
+</td>
+<td><input type="text" name="[r: prop]" value="[r: getProperty(prop)]"></input></td>
+</tr>
+[h: class = if(class=="oddRow", "evenRow", "oddRow")]
+}]
+<tr><td colspan=2 class="[r: if(class=='oddRow', 'evenRow', 'oddRow')]" align="center">
+<input type="submit" name="Save" value="Save"></input>
+</td></tr>
+</table> <!-- End Stats table -->
+</form>
+</body>
+</html>
+
+}]

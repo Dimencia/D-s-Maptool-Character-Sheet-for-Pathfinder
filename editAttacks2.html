@@ -1,0 +1,69 @@
+[h: varsFromStrProp(macro.args)]
+
+[dialog("attackInput15", "width=1050; height=375;"): {
+
+<html>
+<head>
+<title>Attack Editor</title>
+<link rel="stylesheet" type="text/css" href="CharSheet_css@[r: getMacroLocation()]">
+<meta name="input" content="true">
+</head>
+<body>
+<form name="saveAttacks" action="[r:macroLinkText('saveAttacks@Lib:Test')]">
+
+<table class="mainTables"> <!-- Start previous table -->
+<tr><td>
+<tr><th>Attack Name:</th><td>[r:AttackName]</td></tr>
+<tr><th>Number of Attacks:</th><td>[r:numAttacks]</td></tr>
+<tr><th>Base Damage Dice:</th><td>[r:AttackDamageBase]</td></tr>
+<tr><th>Cost Amount:</th><td>[r:costValue]</td></tr>
+<tr><th>Cost Pool:</th><td>[r:costVariable]</td></tr>
+<tr><td></td></tr>
+</td></tr>
+<tr><td>
+<input name="AttackName" type="hidden" value="[r:AttackName]"></input>
+<input name="numAttacks" type="hidden" value="[r:numAttacks]"></input>
+<input name="AttackDamageBase" type="hidden" value="[r:AttackDamageBase]"></input>
+<input name="costValue" type="hidden" value="[r:costValue]"></input>
+<input name="costVariable" type="hidden" value="[r:costVariable]"></input>
+
+<tr><td></td><th>Attack Bonus</th><th>Damage Dice</th><th>Damage Bonus</th><th>Range</th><th>Crit Range</th><th>Crit Mult</th><th>AC Type</th><th>DR Types</th><th>Crit Confirm Bonus</th><th>Crit Damage Bonus</th></tr>
+[h: attackDecrement = 5]
+[h: attackDecFlag = 1]
+[h: AttackMod = getProperty("AttackMod")]
+[h: AtkMod = getProperty("AtkMod")]
+[h: DamageMod = getProperty("DamageMod")]
+[h: DmgMod = getProperty("DmgMod")]
+[h: class = "oddRow"]
+[for(i,0,numAttacks,1,""), code: {
+[h: attackDecrement = if(attackDecFlag,attackDecrement-5,attackDecrement)]
+[h: attackDecFlag = !attackDecFlag]
+<tr class="[r:class]">
+<th>Attack [r:i+1] = 1d20 +</th>
+<td align="center"><input name="attack[r:i]AttackBonus" value="[r:AttackMod+attackDecrement]" size="3"></input></td>
+<td align="right"><input name="attack[r:i]DamageDice" value="[r:AttackDamageBase]" size="4"></input>+</td>
+<td align="left"><input name="attack[r:i]DamageBonus" value="[r:DamageMod]" size="3"></input></td>
+<td align="center"><input name="attack[r:i]Range" value="5" size="3"></input></td>
+<td align="center"><input name="attack[r:i]CritRange" value="20" size="2"></input>-20</td>
+<td align="center">x<input name="attack[r:i]CritMult" value="2" size="2"></input></td>
+<td align="center"><select name="attack[r:i]ACType">
+<option value="Normal">Normal</option>
+<option value="Flatfooted">Flat Footed</option>
+<option value="Touch">Touch</option>
+<option value="Firearm">Firearm</option>
+</select></td>
+<td align="center"><input name="attack[r:i]DRTypes" value="Piercing"></input></td>
+<td align="center"><input name="attack[r:i]CritConfirm" value="0" size="3"></input></td>
+<td align="center"><input name="attack[r:i]CritDamageBonus" value="0" size="3"></input></td>
+</tr>
+[h: class = if(class=="oddRow", "evenRow", "oddRow")]
+}]
+<tr><td colspan=11 align="center"><input type="submit" name="submit" value="Save"></input></td></tr>
+</td></tr>
+
+</table> <!-- End previous table -->
+</form>
+</body>
+</html>
+
+}]

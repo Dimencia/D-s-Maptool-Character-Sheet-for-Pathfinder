@@ -1,0 +1,159 @@
+<!-- Requires these to exist: baseWill, baseRef, baseFort, CMD, AC -->
+
+<!-- This doesn't work yet.  On other pogs, that is.  
+It will only auto-impersonate if you own the pog
+Otherwise you have to manually impersonate... 
+at which point it usually gives errors and stuff, and defaults back
+to your pog sometimes when clicking buttons
+
+Also worth mentioning, if we eval the bonuses for Fort, Will, Ref, CMB
+then we don't have to worry about blank stats
+That or init them properly.  
+
+This applies to that macrolink for GM, so its a big problem
+Consider a map for PlayerName:CharSheetToken on Lib:Test
+Then force an impersonate when calling things
+
+Also CMB, not CMD
+ -->
+
+[h: detailProperties = "Current Age=Age;Movement Speed=Movement;Resistances=Resistances;Maximum BAB=MaxBaB; Temp EXP=TemporaryExperience;"]
+[h: propNames = "Lvl, Str, Dex, Con, Int, Wis, Cha, Luc, KiPool"]
+<!-- NOTE: Lvl must always come first cuz it's special! -->
+[h: combatInfo = "AC=AC;Attack Bonus=AttackMod;Attack Buffs=AtkMod;Damage Bonus=DamageMod;Damage Buffs=DmgMod;Init=Init"]
+<!-- NOTE: The order of combatInfo is important, even if var names aren't -->
+[h: buffs = "Anticipate Peril=AnticipatePeril;Bears Endurance=BEndurance;Greater Heroism=Heroism; Haste=Haste; Protection from Evil = ProEvil; Deadly Aim=Note1; Defensive Fighting=Note2;"]
+[h: buffFunctionNamesInOrder = "Toggle Ant. Peril,Toggle BEndurance,Toggle G Heroism,Toggle Haste,Toggle Pro Evil,Toggle Deadly Aim,Toggle Def Fighting"]
+[h: callingToken = getImpersonated()]
+[h: buffOnColor = "#005500"]
+
+[h: setProperty("lastSheetTab","CharSheet@Lib:Test")]
+[frame("CharSheetTest"): {
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="CharSheet_css@[r: getMacroLocation()]">
+<link rel='onChangeSelection' type='macro' href='[r:macroLinkText("changeTarget@Lib:Test")]'> 
+<meta name="input" content="true">
+<title>Character Sheet</title>
+</head>
+<body>
+<!--First a pane on the side with dumb details
+We use detailProperties which is a "String Properties" as a map-->
+<table> <!--Over-table to make sure everything is inline-->
+<tr><td>
+<table> <!--Start Tabs table -->
+<tr>
+<td border=1px>Overview</td>
+<td>[r:macroLink("Attacks","AttacksSheet@Lib:Test")]</td>
+<td>[r:macroLink("Combat Helper","CombatSheet@Lib:Test")]
+</td></tr>
+</table> <!-- End Tabs table -->
+</td><tr>
+<tr><td>
+<table class="mainTables"> <!-- Start Details Table-->
+<tr><th colspan=2 class="oddRow">
+[r: getName()]</th></tr>
+<tr><td colspan=2 align="center" class="evenRow"><img src='[r: getTokenPortrait(100)]'></img></td></tr>
+<tr><td class="evenRow" align="center" colspan=2>
+[h: hpBarArgs = strformat("MaxLen=50; Value=%{HP}; MaxValue=%{MaxHP}; Label=HP")]
+[macro("TrafficLightBar@this"): hpBarArgs]
+</td></tr>
+<tr><td class="evenRow" align="center" colspan=2>
+[h: maxXP = getProperty("Lvl")*1000]
+[h: TemporaryExperience = getProperty("TemporaryExperience")]
+[h: hpBarArgs = strformat('MaxLen=50; Value=%{TemporaryExperience}; MaxValue=%{maxXP}; Label=XP; Color=120,120,255')]
+[macro("StatusBar@this"): hpBarArgs]
+</td></tr>
+[h: class = "oddRow"]
+[for(i, 0, countStrProp(detailProperties), 1, ""), code: { 
+<tr class="[r:class]">
+<td>
+<b>[r: indexKeyStrProp(detailProperties,i)]</b>
+</td>
+<td>[r: getProperty(indexValueStrProp(detailProperties,i))]</td>
+</tr>
+[h: class = if(class=="oddRow", "evenRow", "oddRow")]
+}]
+</table> <!-- End Details table -->
+</td><td>
+<table class="mainTables"> <!-- Start stats table -->
+<tr><th colspan=2>Stats</th></tr>
+<tr>
+<td class="levelFormat" colspan=2>
+Level [r: getProperty(listGet(propNames,0))]
+</td></tr>
+<tr></tr>
+[h: class = "oddRow"]
+[for (i, 1, listCount(propNames), 1, ""), code: {
+[h: prop=listGet(propNames,i)]
+<tr class="[r:class]">
+<td>
+<b>[r: prop]</b>
+</td>
+<td>
+[r: getProperty(prop)]</td>
+</tr>
+[h: class = if(class=="oddRow", "evenRow", "oddRow")]
+}]
+<tr><td colspan=2 class="[r: class]" align="center">
+[r: macroLink("Edit","StatDialog@Lib:Test", "none", propNames)]
+</td></tr>
+<!-- Adding two more rows to make it more even -->
+<tr></tr><tr></tr>
+</table> <!-- End Stats table -->
+</td><td>
+<table class="mainTables"> <!-- Start buffs table -->
+<tr><th colspan=2>
+Buffs</th></tr>
+[h: class = "oddRow"]
+[for(i, 0, countStrProp(buffs), 1, ""), code: { 
+<tr class="[r:class]">
+<td>
+<b>[r: macroLink(indexKeyStrProp(buffs,i), listGet(buffFunctionNamesInOrder,i)+"@this")]</b>
+</td>
+<td>[r: if(getProperty(indexValueStrProp(buffs,i)),"<font color="+buffOnColor+">On</font>","Off")]</td>
+</tr>
+[h: class = if(class=="oddRow", "evenRow", "oddRow")]
+}]
+<!-- We will include saves and CMD here -->
+<tr><td colspan=2 align="center"><b>Saves <font size=1>[r: macroLink("Edit","editSaves@Lib:Test")]</font></b></td></tr>
+<tr class="oddRow"><td><b>[r: macroLink("Fortitude","rollFortitude@Lib:Test","all")]</b></td>
+<td>[h:conMod = floor((if(Con<10,Con-1,Con)-10)/2)][r:getProperty("baseFort")+conMod+getProperty("Luc")+getProperty("fortMisc")+getProperty("fortMod")]
+</td></tr>
+<tr class="evenRow"><td><b>[r: macroLink("Reflex","rollReflex@Lib:Test","all")]</b></td>
+<td>[h:dexMod = floor((if(Dex<10,Dex-1,Dex)-10)/2)][r:getProperty("baseRef")+dexMod+getProperty("Luc")+getProperty("refMisc")+getProperty("refMod")]
+</td></tr>
+<tr class="oddRow"><td><b>[r: macroLink("Will","rollWill@Lib:Test","all")]</b></td>
+<td>[h:wisMod = floor((if(Wis<10,Wis-1,Wis)-10)/2)][r:getProperty("baseWill")+wisMod+getProperty("Luc")+getProperty("willMisc")+getProperty("willMod")]
+</td></tr>
+<tr class="evenRow"><td><b>[r: macroLink("CMD","rollCMD@Lib:Test","all")]</b></td>
+<td>[r: getProperty("CMD")]
+</td></tr>
+</table><!-- End buffs table -->
+</td><td></td><td></td></tr> <!-- Extra buffer for targets -->
+<tr><td>
+<table class="mainTables"><!-- Start Combat table -->
+<tr><th colspan=3 align="center">Combat <font size=1>[r:macroLink("Edit","editCombat@Lib:Test")]</font></th></tr>
+<!-- This table and combatInfo must be in this order
+AC, AttackBonus, AttackMod, DamageBonus, DamageMod, Init -->
+<tr class="evenRow"><th>[r: indexKeyStrProp(combatInfo,0)]</th>
+<td colspan=2>[r: getProperty(indexValueStrProp(combatInfo,0))]</td>
+<!-- AC gets two columns cuz its big -->
+</tr><tr class="oddRow">
+<th>[r: indexKeyStrProp(combatInfo,1)]</th>
+<td>[r: getProperty(indexValueStrProp(combatInfo,1))]</td>
+<td>[r: if(getProperty(indexValueStrProp(combatInfo,2))==0,"","+"+getProperty(indexValueStrProp(combatInfo,2)))]</td>
+</tr><tr class="evenRow">
+<th>[r: indexKeyStrProp(combatInfo,3)]</th>
+<td>[r: getProperty(indexValueStrProp(combatInfo,3))]</td>
+<td>[r: if(getProperty(indexValueStrProp(combatInfo,4))==0,"","+"+getProperty(indexValueStrProp(combatInfo,4)))]</td>
+</tr><tr class="oddRow">
+<th>[r: macroLink(indexKeyStrProp(combatInfo,5),"rollInit@Lib:Test","all")]</th>
+<td>[r: getProperty(indexValueStrProp(combatInfo,5))]</td>
+</tr>
+</table> <!-- End Combat table -->
+</td></tr></table> <!-- End over-table -->
+</body>
+</html>
+}]
+

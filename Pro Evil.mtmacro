@@ -1,0 +1,13 @@
+/self [h: setProperty("ProEvil",!getProperty("ProEvil"))]
+[h: proEvil = getProperty("ProEvil")]
+
+[h: setProperty("fortMod",if(proEvil,getProperty("fortMod")+2,getProperty("fortMod")-2))]
+[h: setProperty("refMod",if(proEvil,getProperty("refMod")+2,getProperty("refMod")-2))]
+[h: setProperty("willMod",if(proEvil,getProperty("willMod")+2,getProperty("willMod")-2))]
+[h: setProperty("normalAC",if(proEvil>0,getProperty("normalAC")+2,getProperty("normalAC")-2))]
+[h: setProperty("touchAC",if(proEvil>0,getProperty("touchAC")+2,getProperty("touchAC")-2))]
+[h: setProperty("flatfootedAC",if(proEvil>0,getProperty("flatfootedAC")+2,getProperty("flatfootedAC")-2))]
+[h: setProperty("firearmAC",if(proEvil>0,getProperty("firearmAC")+2,getProperty("firearmAC")-2))]
+[h: AC = getProperty("normalAC")+", ff"+getProperty("flatfootedAC")+", t"+getProperty("touchAC")+", fa"+getProperty("firearmAC")]
+[macro("CharSheet@Lib:Test"): ""]
+[abort(0)]

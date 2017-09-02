@@ -1,0 +1,11 @@
+[h: varsFromStrProp(macro.args)]
+[h: Target = listGet(PreviousArgs,1)]
+
+[for (i, 1, countStrProp(macro.args), 1, ""), code: {
+[h: prop=indexKeyStrProp(macro.args,i)]
+[h: setProperty(prop, indexValueStrProp(macro.args,i), Target)]
+}]
+
+[macro("performAttackOnTarget@Lib:Test"): PreviousArgs]
+[abort(0)]
+

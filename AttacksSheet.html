@@ -1,0 +1,41 @@
+[h: setProperty("lastSheetTab","AttacksSheet@Lib:Test")]
+[h: attackNames = getProperty("AttackNames")]
+[frame("CharSheetTest"): {
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="CharSheet_css@[r: getMacroLocation()]">
+<link rel='onChangeSelection' type='macro' href='[r:macroLinkText("changeTarget@Lib:Test")]'> 
+<meta name="input" content="true">
+<title>Character Sheet</title>
+</head>
+<body>
+<table> <!--Over-table to make sure everything is inline-->
+<tr><td>
+<table class="mainTables"> <!--Start Tabs table -->
+<tr>
+<td>[r:macroLink("Overview","CharSheet@Lib:Test")]</td>
+<td border=1px>Attacks</td>
+<td>[r:macroLink("Combat Helper","CombatSheet@Lib:Test")]</td>
+</tr>
+</table> <!-- End Tabs table -->
+</td></tr>
+<tr><th colspan=6 align="center">Attacks <font size=1>[r:macroLink("Edit","editAttacks@Lib:Test")]</font></th></tr>
+<tr><th>Name</th><th># of Attacks</th><th>Damage</th><th>Cost</th></tr>
+<!-- Attacks will be stored as _Name_Attribute -->
+[h: class = "oddRow"]
+[for(i, 0, listCount(attackNames), 1, ""), code: { 
+[h: propPrefix = "_"+listGet(attackNames,i)+"_"]
+<tr class="[r:class]">
+<th>[r:listGet(attackNames,i)]</th>
+<td>[r:getProperty(propPrefix+"NumAttacks")]</td>
+<td>[r:getProperty(propPrefix+"AttackDamageBase")]</td>
+<td>[r:getProperty(propPrefix+"CostValue")] [r:getProperty(propPrefix+"CostVariable")]</td>
+</tr>
+[h: class = if(class=="oddRow", "evenRow", "oddRow")]
+}]
+
+</td></tr>
+</table>
+</body>
+</html>
+}]

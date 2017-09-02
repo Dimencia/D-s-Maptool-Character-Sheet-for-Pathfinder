@@ -1,0 +1,46 @@
+[dialog("statInput"): {
+<html>
+<head>
+<title>Character Sheet</title>
+</head>
+<body>
+<!--First a pane on the side with dumb details
+We use detailProperties which is a "String Properties" as a map-->
+<table> <!--Over-table to make sure everything is inline-->
+<tr><td>
+<table border=1>
+<tr><th colspan=2>
+[r:macroLink("-", "ToggleDetails@Lib:Test", 0, 0)]
+Details</th></tr>
+[for(i, 0, countStrProp(detailProperties), 1, ""), code: { 
+<tr>
+<td>
+<b>[r: indexKeyStrProp(detailProperties,i)]</b>
+</td>
+<td>[r: getProperty(indexValueStrProp(detailProperties,i))]</td>
+</tr>
+}]
+</table> <!-- End Details table -->
+</td><td>
+<table border=1>
+<tr><th colspan=2>Stats</th></tr>
+<tr><td colspan=2>
+Level [r: getProperty(listGet(propNames,0))]
+</td></tr>
+[for (i, 1, listCount(propNames), 1, ""), code: {
+[h: prop=listGet(propNames,i)]
+<tr>
+<td>
+<b>[r: prop]</b>
+</td>
+<td>[r: getProperty(prop)]</td>
+</tr>
+}]
+</table> <!-- End Stats table -->
+</td></tr>
+</table> <!-- End over-table -->
+</body>
+</html>
+}]
+
+

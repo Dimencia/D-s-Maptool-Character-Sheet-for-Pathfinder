@@ -1,0 +1,13 @@
+[h: AttackName = listGet(macro.args,0)]
+[h: targets=getProperty("targets")]
+[h: returnString = ""]
+[for(i, 0, listCount(targets),1,""), code: {
+[arguments = ""]
+[arguments = listAppend(arguments,AttackName)]
+[arguments = listAppend(arguments,listGet(targets,i))]
+[arguments = listAppend(arguments,getProperty("_"+AttackName+"_numAttacks"))]
+[h: Link=macroLink("Attack","performAttackOnTarget@Lib:Test","all",arguments)]
+[returnString = returnString+if(getProperty("InProgressAttack")=="" || getProperty("InProgressAttack")==AttackName,'<td align="center">'+Link+"</td>","<td></td>")]
+}]
+
+[h:macro.return=returnString]

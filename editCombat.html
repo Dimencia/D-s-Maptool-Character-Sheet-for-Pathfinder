@@ -1,0 +1,36 @@
+[dialog("combatInput", "width=500; height=250;"): {
+
+<html>
+<head>
+<title>Combat Editor</title>
+<link rel="stylesheet" type="text/css" href="CharSheet_css@[r: getMacroLocation()]">
+<meta name="input" content="true">
+</head>
+<body>
+<form name="inputCombat" action="[r:macroLinkText('SaveCombatValues@Lib:Test')]">
+
+<table class="mainTables"> <!-- Start combat table -->
+<tr><th></th><th>Total</th><th>Buff Modifier</th></tr>
+<tr class="oddRow"><td><b>Attack</b></td>
+<td><input name="attackMod" value="[r: getProperty('attackMod')]"></input></td>
+<td><input name="AtkMod" value="[r: getProperty('AtkMod')]"></input></td>
+</tr>
+<tr class="evenRow"><td><b>Damage</b></td>
+<td><input name="damageMod" value="[r: getProperty('damageMod')]"></input></td>
+<td><input name="dmgMod" value="[r: getProperty('dmgMod')]"></input></td>
+</tr>
+<tr class="oddRow"><td></td><th>Standard</th><th>Flatfooted</th><th>Touch</th><th>Gun</th></tr>
+<tr><td><b>AC</b></td>
+<td><input name="normalAC" value="[r: getProperty('normalAC')]"></input></td>
+<td><input name="flatfootedAC" value="[r: getProperty('flatfootedAC')]"></input></td>
+<td><input name="touchAC" value="[r: getProperty('touchAC')]"></input></td>
+<td><input name="firearmAC" value="[r: getProperty('firearmAC')]"></input></td>
+</tr>
+<tr><td colspan=5 align="center"><input type="submit" value="save" name="submit"></input></td></tr>
+</table> <!-- End Combat table -->
+</form>
+</body>
+</html>
+
+}]
+

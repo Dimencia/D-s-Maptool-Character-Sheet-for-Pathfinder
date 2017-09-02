@@ -1,0 +1,240 @@
+
+<!-- We are being passed the AttackName then the Target 
+and then the remaining attacks, which we will decrement
+and set on property InProgressRemainingAttacks
+We also should set InProgressAttackName in case this is the 
+first time this is called -->
+<!-- If we try to access an enemy property that doesnt exist
+Pop up a window for the GM to enter the various properties
+we need, with a button to center view on pog -->
+<!-- Special case, if we detect AC but not the little ones
+We can ask the player to input them -->
+[h: enemyProperties = "AC,flatfootedAC,touchAC,firearmAC,normalAC,DR,HP,MaxHP"]
+
+[h: AttackName = listGet(macro.args,0)]
+[h: Target = listGet(macro.args,1)]
+[h: InProgressRemainingAttacks = listGet(macro.args,2)]
+
+[h: InProgressRemainingAttacks = if(getProperty("InProgressAttack")=="",InProgressRemainingAttacks,getProperty("InProgressRemainingAttacks"))]
+
+
+[h: neededProperties = ""]
+[h, for(i, 0, listCount(enemyProperties), 1, ""), code: {
+[h: neededProperties = if(hasProperty(listGet(enemyProperties,i),Target)==0, 
+listAppend(neededProperties,listGet(enemyProperties,i)),neededProperties)]
+}]
+[h: needsPlayerAC = listContains(neededProperties,"flatfootedAC")+
+listContains(neededProperties,"touchAC")+
+listContains(neededProperties,"normalAC")+
+listContains(neededProperties,"firearmAC")]
+<!-- listcontains returns the number of occurences -->
+
+[h, if(needsPlayerAC > 0 && !listContains(neededProperties,"AC")), code:
+{
+[h,macro("playerInputAC@Lib:Test"):macro.args]
+<!-- playerInputAC will call this again when its done -->
+[h:abort(0)]
+};
+{}]
+
+
+<!-- Start the actual attack -->
+
+[h: attackNamePrefix = "_"+AttackName+"_"]
+[h: attackNumber = getProperty(attackNamePrefix+"numAttacks")-InProgressRemainingAttacks]
+[h: InProgressRemainingAttacks = -1+InProgressRemainingAttacks]
+[h: attackRoll = 1d20]
+[h: AttackBonus = getProperty(attackNamePrefix+"attack"+attackNumber+"AttackBonus")]
+[h: DamageBonus = eval("0+"+getProperty(attackNamePrefix+"attack"+attackNumber+"DamageBonus"))]
+[h: DamageDice = getProperty(attackNamePrefix+"attack"+attackNumber+"DamageDice")]
+[h: Range = getProperty(attackNamePrefix+"attack"+attackNumber+"Range")]
+[h: ACType = getProperty(attackNamePrefix+"attack"+attackNumber+"ACType")]
+[h: CritRange = getProperty(attackNamePrefix+"attack"+attackNumber+"CritRange")]
+[h: CritMult = getProperty(attackNamePrefix+"attack"+attackNumber+"CritMult")]
+[h: DRTypes = lower(getProperty(attackNamePrefix+"attack"+attackNumber+"DRTypes"))]
+[h: CritConfirmBonus = getProperty(attackNamePrefix+"attack"+attackNumber+"CritConfirm")]
+[h: CritDamageBonus = getProperty(attackNamePrefix+"attack"+attackNumber+"CritDamageBonus")]
+[h: CritDamageBonus = eval("0+"+CritDamageBonus)]
+[h: callingToken = getImpersonated()]
+[h: Distance = floor(getDistance(callingToken, 1, Target, "NO_GRID"))]
+[h: Distance = Distance-(eval("0+"+getSize(Target))*2)]
+[h: RangeDifference = (Distance/Range)]
+[h: RangeBonus = 0-floor(RangeDifference)]
+
+[h: targetDRType = lower(getProperty("DR",Target))]
+[h: targetDRAmount = substring(targetDRType,0,indexOf(targetDRType,"/"))]
+[h: targetDRType = substring(targetDRType,indexOf(targetDRType,"/")+1)]
+[h: targetDRToApply = 0]
+[h: DRApplies = 0]
+
+[h, if(indexOf(DRTypes,targetDRType) == -1), code: {
+[h: targetDRToApply = -targetDRAmount]
+[h: DRApplies = 1]
+};{}]
+
+[h: totalAttackRoll = attackRoll+AttackBonus+RangeBonus]
+[h: targetAC = getProperty(ACType+"AC",Target)]
+
+[h: confirmRoll = 1d20]
+[h: DamageRoll = eval("0+"+DamageDice)]
+
+[h, if(totalAttackRoll >= targetAC || attackRoll == 20), code: 
+{
+<!-- Attack hits -->
+<!-- Check for crit, confirm crit if necessary, roll damage
+Apply damage, ask about DR, etc-->
+[h: AttackHit = 1]
+[h: AttackCrit = 0]
+
+[h, if(attackRoll >= CritRange), code: {
+[h: AttackCrit = 1]
+};{
+}]
+[h: AttackCritical = 0]
+[h: confirmResults = confirmRoll+AttackBonus+CritConfirmBonus+RangeBonus]
+
+[h, if(AttackCrit && confirmResults >= getProperty(ACType+"AC",Target)), code: {
+<!-- Roll Crit Damage -->
+[h: AttackCritical = 1]
+
+[h: TotalDamage = DamageRoll*CritMult+DamageBonus*CritMult+CritDamageBonus]
+};{
+<!-- Roll Normal Damage -->
+[h: TotalDamage = DamageRoll+DamageBonus]
+}]
+<!-- Apply DR -->
+[h: TotalDamage = TotalDamage+targetDRToApply]
+
+};
+{
+[h: AttackHit = 0]
+[h: AttackCrit = 0]
+[h: AttackCritical = 0]
+
+}]
+[h: newArguments = ""]
+[h: listAppend(newArguments,AttackName)]
+[h: listAppend(newArguments,Target)]
+[h: listAppend(newArguments,InProgressRemainingAttacks)]
+
+
+<!-- Send results to the dialog -->
+[h: fixingPrefix = "_"+attackNumber]
+[h: fixingArgumentNames = "Target,attackRoll,AttackBonus,DamageRoll,DamageBonus,CritMult,AttackCritical,confirmRoll,CritConfirmBonus,CritDamageBonus,targetDRAmount,DRApplies,targetAC,AttackHit,CritRange"]
+
+<!-- Add range to attack bonus so we don't have to deal with it -->
+[h: AttackBonus = AttackBonus+RangeBonus]
+
+[h: fixingArguments = "AttackName="+AttackName+";InProgressRemainingAttacks="+InProgressRemainingAttacks+";"]
+[h, for(i, 0, listCount(fixingArgumentNames), 1, ""), code: {
+[fixingArguments = setStrProp(fixingArguments,fixingPrefix+listGet(fixingArgumentNames,i),eval(listGet(fixingArgumentNames,i)))]
+}]
+[h: setProperty("InProgressRemainingAttacks",InProgressRemainingAttacks)]
+[r, macro("AttackResultsDialog@Lib:Test"):fixingArguments]
+
+
+<!-- 
+Right, so, newest ideas: 
+Instead of displaying to chat, open up a dialog window to show
+the player the results as they come in.  At any point, 
+give them an 'edit' button, and a 'submit' button if 
+they are satisfied.  
+They cannot edit die rolls, but have buttons to force 20
+or reroll and subtract the penalties
+
+This dialog window would take as input an arraymap
+first AttackName, then attacks remaining
+Then _(attackNumber)varName formatting
+We then don't have to store this stuff on the pog
+So naming isn't that important
+Each edit we change the value and pass it back to the dialog
+Remember we have to recalc any relevant values, so do that
+at the start why not
+
+Make sure you can't close this window without submitting
+
+We'll use AttackNumber to detect if it's a fresh window
+And we copy over the args to a _original arraylist
+And put these as hidden inputs
+
+Always, we store the original 
+values in their own varlist. We also include a notes
+section for player to explain what happened
+This dialog will show the projected HP bar of the attacked 
+targets but won't apply damage yet.
+Make 'DR Applies' a checkbox.
+I guess make this an editable form by default
+But warn the player that all changes are documented
+When this is submitted, pop up to GM and ask for approval
+Show any player edits as a tooltip if the original var
+doesn't match the submitted var, and red
+Also allow the GM to edit any of these values, including
+things like Total Damage to stealthily fudge things
+On this approval sheet ask GM for flavor text or give the option
+to have player write flavor.  If accepted and player write, 
+obviously pop up to the player and prompt for flavor
+Only after the flavor is submitted, show the attacks and damage
+nicely in a table in chat, with minimal info
+Mostly just show the dice and total bonus for each damage
+and attack
+Then the flavor immediately
+In either case, apply damage and death states
+
+
+
+BTW next thing to do is add the attack type to the attack
+since that kinda overhauls the system and will be required
+We will also need crit mult, crit chance, 
+crit attack confirm bonus, crit damage bonus
+And to start, just one extra elemental damage bonus and type
+I'd like it to generate more fields for more damage bonuses
+and types if you fill them.  Could make an update button
+that just calls a macro that 
+ increments _attackName_numDamageTypes which would
+make it create more damage type fields 
+We would store these as a list in _attackName_attack2_damageType
+ -->
+<!-- Not do it here obviously, just in general, then get
+back to finishing this -->
+<!-- Anyway, remember that once we make this attack we open
+a new macro to update the combat window, not the usual macro
+Unless remaining attacks is 0 after this in which case the 
+normal combat window again and erase InProgressAttackName
+We also need a skip button to skip an attack, and to
+display attack bonus, and/or hit% chance for each attack
+in general on the combat screen
+
+For now let's pretend I don't have the DR bypass thing, 
+we can fix that later probably since it's pretty custom
+As for Resistances, not worth dealing with yet, maybe eventually/
+But we will need a DR field for each attack, comma separated
+
+Idea for resistances, ask the player if it applies
+and store it in a list on the library.  Name it something like
+_doesNotResistList and _resistsList
+Where each is a key-value pair, with the key being the attacks
+'DR' or damage type value, and the pair being a list of 
+'Resistances' values that are known to resist or not resist
+And you pass this list the full resistances string
+So if you encounter it again it already knows
+that damagetype 'Cold Iron, Adamantine, Magic' does not 
+get resistance applied for resist type 'elemental(10)'
+
+Another random idea, if you kill a unit, prompt the player
+to enter flavor text
+
+Also totally random idea, make an OOC chat tab for lulz?
+By which I mean, make two tabs, and we treat one
+as a regular chat tab but it doesn't show anything
+that's fully enclosed in ()
+and the OOC tab shows those things, but still just one 
+input.  
+I wonder if you can overwrite the original chat window
+if you can get the right frame name?
+But logging might be a problem.  Need to ask jordan
+how she saves logs to see if I can mimic the behavior
+
+ -->
+
+
+

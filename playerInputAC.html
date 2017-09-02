@@ -1,0 +1,39 @@
+[h: AttackName = listGet(macro.args,0)]
+[h: Target = listGet(macro.args,1)]
+[h: InProgressRemainingAttacks = listGet(macro.args,2)]
+[dialog("ACInput3","width=200; height=300;"): {
+
+[h: ACNames = "normalAC,touchAC,flatfootedAC,firearmAC"]
+<html>
+<head>
+<title>AC Confirmation</title>
+<link rel="stylesheet" type="text/css" href="CharSheet_css@[r: getMacroLocation()]">
+<meta name="input" content="true">
+</head>
+<body>
+<form name="inputStats" action="[r:macroLinkText('saveACValues@Lib:Test')]">
+<input type="hidden" name="PreviousArgs" value="[r:macro.args]"></input>
+<table class="mainTables"> <!-- Start editing table -->
+<tr><th colspan=2>Copy this into the appropriate spots</th></tr>
+<tr><th colspan=2>AC: [r:getProperty("AC",Target)]</th></tr>
+[h: class = "oddRow"]
+[for (i, 0, listCount(ACNames), 1, ""), code: {
+[h: prop=listGet(ACNames,i)]
+<tr class="[r:class]">
+<td>
+<b><label for="[r: prop]">[r:prop]</label></b>
+</td>
+<td><input type="text" name="[r: prop]" value=""></input></td>
+</tr>
+[h: class = if(class=="oddRow", "evenRow", "oddRow")]
+}]
+<tr><td colspan=2 class="[r: if(class=='oddRow', 'evenRow', 'oddRow')]" align="center">
+<input type="submit" name="Save" value="Save"></input>
+</td></tr>
+</table> <!-- End Stats table -->
+</form>
+</body>
+</html>
+
+
+}]

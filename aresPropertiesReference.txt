@@ -1,0 +1,42 @@
+48 35 35 35 35 35 48 48
+
+Ares activates his boots to move to a better distance for his pistols, and takes a few potshots at the big creature, but mostly focuses on the shoggoths once more, letting out another barrage of bullets after a swift reload (first attack and last 2 are against the big one, they should all be full bab.  Macro might break, tried a new thing for haste... other attacks are at 117 til it falls then 238)
+
+Luc
+Lvl
+MaxHP
+HP
+AC
+CMD
+Init
+Movement
+Resistances
+LoadedAmmoP
+LoadedAmmoS
+KiPool
+TemporaryExperience
+AtkMod (Misc attackmod)
+DmgMod (Misc damagemod)
+MaxBaB
+Age
+AttackMod (Base)
+DamageMod (Base)
+
+
+Ares struggles forward through the air as close as he can to the great beast, swiftly loading one of his guns with bane bullets for the creature, looking it in the eye before pointing his gun at it and firing one powerful shot - knowing that with Zermah's magic, it can't miss.  He really hopes this kills it...
+
+[h: setProperty("editingStats",!getProperty("editingStats"))]
+[h: if(getProperty("editingStats"), CODE: {]
+
+[macro("CharSheet@Lib:Test"): ""]
+[abort(0)]
+
+
+
+<font color="
+[r: if(getProperty(prop)>getStrProp(getProperty('baseStats'),prop),buffOnColor,'black')]
+">
+
+
+
+[r, if(eval(getProperty(prop))>eval(getStrProp(baseStats,prop))): buffOnColor;'black']

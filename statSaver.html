@@ -1,0 +1,6 @@
+[for (i, 0, countStrProp(macro.args), 1, ""), code: {
+[h: prop=indexKeyStrProp(macro.args,i)]
+[h: setProperty(prop, indexValueStrProp(macro.args,i))]
+}]
+[macro("CharSheet@Lib:Test"): ""]
+[abort(0)]

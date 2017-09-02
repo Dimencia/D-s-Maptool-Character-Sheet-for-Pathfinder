@@ -1,0 +1,135 @@
+[h: AttackName = getStrProp(macro.args,"AttackName")]
+[h: InProgressRemainingAttacks = getStrProp(macro.args,"InProgressRemainingAttacks")]
+[h: attackNamePrefix = "_"+AttackName+"_"]
+[h: attackNumber = getProperty(attackNamePrefix+"numAttacks")-InProgressRemainingAttacks]
+
+[h: firstRun = 0]
+
+[h, if(getProperty("InProgressAttack")==""), code: {
+[h: setProperty("InProgressAttack",AttackName)]
+[h: originalArgs = encode(macro.args)]
+[h: firstRun = 1]
+};{}]
+
+[h: FinalSubmission = getStrProp(macro.args,"FinalSubmission","")]
+[r, if(FinalSubmission != ""), code: {
+[h: setProperty("InProgressAttack","")]
+[h, macro("SendGMAttackInfo@Lib:Test"):macro.args]
+[r: macro.return]
+WTF
+[abort(0)]
+};{}]
+
+[h, if(getStrProp(macro.args,"Update","") == "" && !firstRun), code: {
+[h: macro.args = macro.args+";"+getProperty("lastAttackResultDialogArgs")]
+};{}]
+[h: setProperty("lastAttackResultDialogArgs",macro.args)]
+
+[h: originalArgs = getStrProp(macro.args,"originalArgs")]
+[dialog(AttackName+"Results", "width=1200; height=800;"): {
+
+<!-- TO DO: Handle missing DR, HP, MaxHP -->
+<html>
+<head>
+<title>[r:AttackName] Results</title>
+<link rel="stylesheet" type="text/css" href="CharSheet_css@[r: getMacroLocation()]">
+<meta name="input" content="true">
+</head>
+<body>
+<form name="editResults" action="[r:macroLinkText('AttackResultsDialog@Lib:Test','all')]">
+<input type="hidden" name="AttackName" value="[r:AttackName]"></input>
+<input type="hidden" name="InProgressRemainingAttacks" value="[r:InProgressRemainingAttacks]"></input>
+<input type="hidden" name="originalArgs" value="[r:originalArgs]"></input>
+<table class="mainTables"> <!-- Start main table -->
+<tr><th colspan="15">Attacks Left: [r:InProgressRemainingAttacks]</th></tr>
+<tr>
+<th>Attack</th>
+<th>Target</th>
+<th>Hit?</th>
+<th>Atk Roll</th>
+<th>Bonus</th>
+<th>Damage</th>
+<th>Bonus</th>
+<th>Crit Range</th>
+<th>Confirm Roll</th>
+<th>Confirm Bonus</th>
+<th>Crit Mult</th>
+<th>Crit Dmg Bonus</th>
+<th>DR Amount</th>
+<th>DR Applies?</th>
+<th>FINAL DAMAGE</th> <!-- Not editable, calculated here -->
+</tr>
+[h: class = "oddRow"]
+[r, for (i, 0, attackNumber, 1, ""), code: {
+[h: attackPrefix = "_"+i]
+[h: Target = getStrProp(macro.args,attackPrefix+"Target")]
+[h: AttackHit = getStrProp(macro.args,attackPrefix+"AttackHit")]
+[h: attackRoll = getStrProp(macro.args,attackPrefix+"attackRoll")]
+[h: AttackBonus = getStrProp(macro.args,attackPrefix+"AttackBonus")]
+[h: AttackCritical = getStrProp(macro.args,attackPrefix+"AttackHit")]
+[h: DamageRoll = getStrProp(macro.args,attackPrefix+"DamageRoll")]
+[h: DamageBonus = getStrProp(macro.args,attackPrefix+"DamageBonus")]
+[h: CritRange = getStrProp(macro.args,attackPrefix+"CritRange")]
+[h: CritMult = getStrProp(macro.args,attackPrefix+"CritMult")]
+[h: CritConfirmBonus = getStrProp(macro.args,attackPrefix+"CritConfirmBonus")]
+[h: CritDamageBonus = getStrProp(macro.args,attackPrefix+"CritDamageBonus")]
+[h: DRApplies = getStrProp(macro.args,attackPrefix+"DRApplies","")]
+[h: targetDRAmount = getStrProp(macro.args,attackPrefix+"targetDRAmount")]
+[h: confirmRoll = getStrProp(macro.args,attackPrefix+"confirmRoll")]
+[h: targetAC = getStrProp(macro.args,attackPrefix+"targetAC")]
+
+[h: DRApplies = if(DRApplies == "",0,DRApplies)]
+
+<!-- Gonna recalc AttackHit and AttackCritical here 
+Don't let them edit those, make the save button an 
+update button til finish.  Plus a skip button 
+That means we don't need these at all
+-->
+[h: totalAttackRoll = attackRoll+AttackBonus]
+[h: AttackHit = if(totalAttackRoll >= targetAC || attackRoll == 20,1,0)]
+[h: confirmResults = confirmRoll+AttackBonus+CritConfirmBonus]
+[h: AttackCritical = if(attackRoll>=eval("0+"+CritRange) && confirmResults>=targetAC,1,0)]
+
+[h: TotalDamage = 0]
+[h: DRToApply = if(DRApplies,eval("-"+targetDRAmount),0)]
+[h: TotalDamage = if(AttackHit,DamageRoll+DamageBonus+DRToApply,0)]
+[h: TotalDamage = if(AttackCritical,DamageRoll*CritMult+DamageBonus*CritMult+DRToApply+CritDamageBonus, TotalDamage)]
+
+<!-- Next up, show damage on the HP percent -->
+
+[h: hitText = if(AttackHit,"<font color='green'>HIT</font>","<font color='grey'>miss</font>")]
+[h: hitText = if(AttackCritical,"<font color='red'>CRIT!</font>",hitText)]
+
+<input type="hidden" name="[r:attackPrefix+'targetAC']" value="[r:targetAC]"></input>
+<input type="hidden" name="[r:attackPrefix+'Target']" value="[r:Target]"></input>
+
+<tr class="[r:class]">
+<td align="center">#[r:i+1] vs</td>
+<td align="left">[r:targetAC] AC [r:getName(Target)] [r:floor(100*(getProperty("HP",Target)/getProperty("MaxHP",Target)))]%</td>
+<td align="center">[r: hitText]</td>
+<td align="center"><input name="[r:attackPrefix+'attackRoll']" value="[r:attackRoll]" size="[r:length(attackRoll)]"></input></td>
+<td align="center"><input name="[r:attackPrefix+'AttackBonus']" value="[r:AttackBonus]" size="[r:length(AttackBonus)]"></input></td>
+<td align="center"><input name="[r:attackPrefix+'DamageRoll']" value="[r:DamageRoll]" size="[r:length(DamageRoll)]"></input></td>
+<td align="center"><input name="[r:attackPrefix+'DamageBonus']" value="[r:DamageBonus]" size="[r:length(DamageBonus)]"></input></td>
+<td align="center"><input name="[r:attackPrefix+'CritRange']" value="[r:CritRange]" size="[r:length(CritRange)]"></input></td>
+<td align="center"><input name="[r:attackPrefix+'confirmRoll']" value="[r:confirmRoll]" size="[r:length(confirmRoll)]"></input></td>
+<td align="center"><input name="[r:attackPrefix+'CritConfirmBonus']" value="[r:CritConfirmBonus]" size="[r:length(CritConfirmBonus)]"></input></td>
+<td align="center"><input name="[r:attackPrefix+'CritMult']" value="[r:CritMult]" size="[r:length(CritMult)]"></input></td>
+<td align="center"><input name="[r:attackPrefix+'CritDamageBonus']" value="[r:CritDamageBonus]" size="[r:length(CritDamageBonus)]"></input></td>
+<td align="center"><input name="[r:attackPrefix+'targetDRAmount']" value="[r:targetDRAmount]" size="[r:length(targetDRAmount)]"></input></td>
+<td align="center"><input type="checkbox" name="[r:attackPrefix+'DRApplies']" value="1" [r:if(DRApplies,'checked="checked"','')]></input></td>
+<td align="center">[r:TotalDamage]</td>
+
+</tr>
+[h: class = if(class=="oddRow", "evenRow", "oddRow")]
+}]
+<tr class="[r: class]"><td colspan=15 align="center">
+[r:if(InProgressRemainingAttacks==0,'<input type="submit" name="FinalSubmission" value="Send To GM"></input>','')]
+<input type="submit" name="Update" value="Update"></input>
+</td></tr>
+</table> <!-- End table -->
+</form>
+</body>
+</html>
+
+}]

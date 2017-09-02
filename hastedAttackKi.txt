@@ -1,0 +1,572 @@
+[h: MOD = AttackMod+AtkMod]
+[h: ThreatRange = 17]
+[h: critMult = 4]
+[h: damMod = DamageMod+DmgMod]
+[h: attackColor = "<font style='color:black;'>"]
+[h: damageColor = "<font color=red>"]
+[h:totalDamage=0]
+[h: attackNumber=1]
+[h: attackCounter=1]
+[h:kiPool = kiPool-1]
+
+<b><center>Heirloom Pistols (Touch) 
+{if(Note1,"(Deadly Aim)","")} 
+{if(Note2,"(Defensive Fighting)","")}<br/></b></center>
+<center>[h:oldP = LoadedAmmoP]
+&nbsp;&nbsp;&nbsp;{LoadedAmmoP = if(LoadedAmmoP>=LoadedAmmoS,LoadedAmmoP-4,LoadedAmmoP-3)}/6 Remaining (Primary) | {LoadedAmmoS = if(LoadedAmmoS>oldP,LoadedAmmoS-4,LoadedAmmoS-3)}/6 Remaining(Secondary)</center>
+
+<table style="color:#666666;padding:0px 0px 0px 20px;">
+<tr>
+
+
+
+<td>
+[h: damage = 2d10]
+[h: damage2= 2d10]
+[h: damage3= 2d10]
+[h: damage4=2d10]
+[h: extra = 0]
+[h: critextra = 3d8]
+
+[h: EnemyAC1 = TargetAC]
+<b>Attack {attackNumber}</b>:
+
+{attackColor}
+[h:ATK1 = 1d20]
+[t:ATK1+MOD]
+</font><td>vs {EnemyAC1}</td></td>
+
+[h: threat1=if(ATK1 >= ThreatRange,1,0)]
+[h: fail1=if(ATK1 == 1,1,0)]
+
+[h: hitstatus=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+[h: hitstatus=if(hitstatus == 1 && threat1 == 1, 3, hitstatus)]
+[h: hitstatus=if(fail1 == 1, 4, hitstatus)]
+
+<td>
+<b>{damageColor}
+[r, switch(hitstatus): 
+case 0: "</font>Miss!</td><td>";
+case 1: "Hit!";
+case 3: "Threat!";
+case 4: "</font>FAIL!!</td><td>"]
+</b>
+
+[h: hit1=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+
+[h: ATKcrit = 1d20]
+[if(hit1 == 1 && threat1 == 1), code: 
+{</td><td>Confirm: {attackColor} [t:ATKcrit+MOD+4] </font></td>};{</td><td>}]
+
+[h:fail1=if(ATKcrit==1,1,0)]
+
+[h: threat1=if(((ATKcrit+MOD+4) >= EnemyAC1 && fail1 == 0 && threat1 == 1)
+|| (ATKcrit == 20 && threat1 ==1),1,0)]
+</td>
+
+<td>
+[if((ATKcrit+MOD+4 >=EnemyAC1 && fail1 == 0 && threat1 == 1)||(ATKcrit == 20 && threat1 ==1)),code: {
+Crit Damage:</td><td> {damageColor}[t:damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra] </font>};{}]
+
+[if(hit1 == 1 && threat1 == 0), code: {Damage:</td><td> {damageColor} [t:(damage+damMod+extra)]</font>};{}]
+
+[h:totalDamage = totalDamage+if(hit1 == 1, if(threat1 == 1, (damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra), (damage+damMod+extra)),0)]
+
+[h:attackNumber = attackNumber+1]
+[h:attackCounter = attackCounter+1]
+[if(attackCounter == 3), code: {[h:MOD=MOD-5]</tr><tr>[h:attackCounter = 1]};{}]
+[if(attackCounter == 2), code: {<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>};{}]
+</td>
+
+
+
+<td>
+[h: damage = 2d10]
+[h: damage2= 2d10]
+[h: damage3= 2d10]
+[h: damage4=2d10]
+[h: extra = 0]
+[h: critextra = 3d8]
+
+[h: EnemyAC1 = TargetAC]
+<b>Attack {attackNumber}</b>:
+
+{attackColor}
+[h:ATK1 = 1d20]
+[t:ATK1+MOD]
+</font><td>vs {EnemyAC1}</td></td>
+
+[h: threat1=if(ATK1 >= ThreatRange,1,0)]
+[h: fail1=if(ATK1 == 1,1,0)]
+
+[h: hitstatus=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+[h: hitstatus=if(hitstatus == 1 && threat1 == 1, 3, hitstatus)]
+[h: hitstatus=if(fail1 == 1, 4, hitstatus)]
+
+<td>
+<b>{damageColor}
+[r, switch(hitstatus): 
+case 0: "</font>Miss!</td><td>";
+case 1: "Hit!";
+case 3: "Threat!";
+case 4: "</font>FAIL!!</td><td>"]
+</b>
+
+[h: hit1=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+
+[h: ATKcrit = 1d20]
+[if(hit1 == 1 && threat1 == 1), code: 
+{</td><td>Confirm: {attackColor} [t:ATKcrit+MOD+4] </font></td>};{</td><td>}]
+
+[h:fail1=if(ATKcrit==1,1,0)]
+
+[h: threat1=if(((ATKcrit+MOD+4) >= EnemyAC1 && fail1 == 0 && threat1 == 1)
+|| (ATKcrit == 20 && threat1 ==1),1,0)]
+</td>
+
+<td>
+[if((ATKcrit+MOD+4 >=EnemyAC1 && fail1 == 0 && threat1 == 1)||(ATKcrit == 20 && threat1 ==1)),code: {
+Crit Damage:</td><td> {damageColor}[t:damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra] </font>};{}]
+
+[if(hit1 == 1 && threat1 == 0), code: {Damage:</td><td> {damageColor} [t:(damage+damMod+extra)]</font>};{}]
+
+[h:totalDamage = totalDamage+if(hit1 == 1, if(threat1 == 1, (damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra), (damage+damMod+extra)),0)]
+
+[h:attackNumber = attackNumber+1]
+[h:attackCounter = attackCounter+1]
+[if(attackCounter == 3), code: {[h:MOD=MOD-5]</tr><tr>[h:attackCounter = 1]};{}]
+[if(attackCounter == 2), code: {<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>};{}]
+</td>
+
+
+
+<td>
+[h: damage = 2d10]
+[h: damage2= 2d10]
+[h: damage3= 2d10]
+[h: damage4=2d10]
+[h: extra = 0]
+[h: critextra = 3d8]
+
+[h: EnemyAC1 = TargetAC]
+<b>Attack {attackNumber}</b>:
+
+{attackColor}
+[h:ATK1 = 1d20]
+[t:ATK1+MOD]
+</font><td>vs {EnemyAC1}</td></td>
+
+[h: threat1=if(ATK1 >= ThreatRange,1,0)]
+[h: fail1=if(ATK1 == 1,1,0)]
+
+[h: hitstatus=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+[h: hitstatus=if(hitstatus == 1 && threat1 == 1, 3, hitstatus)]
+[h: hitstatus=if(fail1 == 1, 4, hitstatus)]
+
+<td>
+<b>{damageColor}
+[r, switch(hitstatus): 
+case 0: "</font>Miss!</td><td>";
+case 1: "Hit!";
+case 3: "Threat!";
+case 4: "</font>FAIL!!</td><td>"]
+</b>
+
+[h: hit1=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+
+[h: ATKcrit = 1d20]
+[if(hit1 == 1 && threat1 == 1), code: 
+{</td><td>Confirm: {attackColor} [t:ATKcrit+MOD+4] </font></td>};{</td><td>}]
+
+[h:fail1=if(ATKcrit==1,1,0)]
+
+[h: threat1=if(((ATKcrit+MOD+4) >= EnemyAC1 && fail1 == 0 && threat1 == 1)
+|| (ATKcrit == 20 && threat1 ==1),1,0)]
+</td>
+
+<td>
+[if((ATKcrit+MOD+4 >=EnemyAC1 && fail1 == 0 && threat1 == 1)||(ATKcrit == 20 && threat1 ==1)),code: {
+Crit Damage:</td><td> {damageColor}[t:damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra] </font>};{}]
+
+[if(hit1 == 1 && threat1 == 0), code: {Damage:</td><td> {damageColor} [t:(damage+damMod+extra)]</font>};{}]
+
+[h:totalDamage = totalDamage+if(hit1 == 1, if(threat1 == 1, (damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra), (damage+damMod+extra)),0)]
+
+[h:attackNumber = attackNumber+1]
+[h:attackCounter = attackCounter+1]
+[if(attackCounter == 3), code: {[h:MOD=MOD-5]</tr><tr>[h:attackCounter = 1]};{}]
+[if(attackCounter == 2), code: {<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>};{}]
+</td>
+
+
+
+<td>
+[h: damage = 2d10]
+[h: damage2= 2d10]
+[h: damage3= 2d10]
+[h: damage4=2d10]
+[h: extra = 0]
+[h: critextra = 3d8]
+
+[h: EnemyAC1 = TargetAC]
+<b>Attack {attackNumber}</b>:
+
+{attackColor}
+[h:ATK1 = 1d20]
+[t:ATK1+MOD]
+</font><td>vs {EnemyAC1}</td></td>
+
+[h: threat1=if(ATK1 >= ThreatRange,1,0)]
+[h: fail1=if(ATK1 == 1,1,0)]
+
+[h: hitstatus=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+[h: hitstatus=if(hitstatus == 1 && threat1 == 1, 3, hitstatus)]
+[h: hitstatus=if(fail1 == 1, 4, hitstatus)]
+
+<td>
+<b>{damageColor}
+[r, switch(hitstatus): 
+case 0: "</font>Miss!</td><td>";
+case 1: "Hit!";
+case 3: "Threat!";
+case 4: "</font>FAIL!!</td><td>"]
+</b>
+
+[h: hit1=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+
+[h: ATKcrit = 1d20]
+[if(hit1 == 1 && threat1 == 1), code: 
+{</td><td>Confirm: {attackColor} [t:ATKcrit+MOD+4] </font></td>};{</td><td>}]
+
+[h:fail1=if(ATKcrit==1,1,0)]
+
+[h: threat1=if(((ATKcrit+MOD+4) >= EnemyAC1 && fail1 == 0 && threat1 == 1)
+|| (ATKcrit == 20 && threat1 ==1),1,0)]
+</td>
+
+<td>
+[if((ATKcrit+MOD+4 >=EnemyAC1 && fail1 == 0 && threat1 == 1)||(ATKcrit == 20 && threat1 ==1)),code: {
+Crit Damage:</td><td> {damageColor}[t:damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra] </font>};{}]
+
+[if(hit1 == 1 && threat1 == 0), code: {Damage:</td><td> {damageColor} [t:(damage+damMod+extra)]</font>};{}]
+
+[h:totalDamage = totalDamage+if(hit1 == 1, if(threat1 == 1, (damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra), (damage+damMod+extra)),0)]
+
+[h:attackNumber = attackNumber+1]
+[h:attackCounter = attackCounter+1]
+[if(attackCounter == 3), code: {[h:MOD=MOD-5]</tr><tr>[h:attackCounter = 1]};{}]
+[if(attackCounter == 2), code: {<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>};{}]
+</td>
+
+
+
+<td>
+[h: damage = 2d10]
+[h: damage2= 2d10]
+[h: damage3= 2d10]
+[h: damage4=2d10]
+[h: extra = 0]
+[h: critextra = 3d8]
+
+[h: EnemyAC1 = TargetAC]
+<b>Attack {attackNumber}</b>:
+
+{attackColor}
+[h:ATK1 = 1d20]
+[t:ATK1+MOD]
+</font><td>vs {EnemyAC1}</td></td>
+
+[h: threat1=if(ATK1 >= ThreatRange,1,0)]
+[h: fail1=if(ATK1 == 1,1,0)]
+
+[h: hitstatus=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+[h: hitstatus=if(hitstatus == 1 && threat1 == 1, 3, hitstatus)]
+[h: hitstatus=if(fail1 == 1, 4, hitstatus)]
+
+<td>
+<b>{damageColor}
+[r, switch(hitstatus): 
+case 0: "</font>Miss!</td><td>";
+case 1: "Hit!";
+case 3: "Threat!";
+case 4: "</font>FAIL!!</td><td>"]
+</b>
+
+[h: hit1=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+
+[h: ATKcrit = 1d20]
+[if(hit1 == 1 && threat1 == 1), code: 
+{</td><td>Confirm: {attackColor} [t:ATKcrit+MOD+4] </font></td>};{</td><td>}]
+
+[h:fail1=if(ATKcrit==1,1,0)]
+
+[h: threat1=if(((ATKcrit+MOD+4) >= EnemyAC1 && fail1 == 0 && threat1 == 1)
+|| (ATKcrit == 20 && threat1 ==1),1,0)]
+</td>
+
+<td>
+[if((ATKcrit+MOD+4 >=EnemyAC1 && fail1 == 0 && threat1 == 1)||(ATKcrit == 20 && threat1 ==1)),code: {
+Crit Damage:</td><td> {damageColor}[t:damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra] </font>};{}]
+
+[if(hit1 == 1 && threat1 == 0), code: {Damage:</td><td> {damageColor} [t:(damage+damMod+extra)]</font>};{}]
+
+[h:totalDamage = totalDamage+if(hit1 == 1, if(threat1 == 1, (damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra), (damage+damMod+extra)),0)]
+
+[h:attackNumber = attackNumber+1]
+[h:attackCounter = attackCounter+1]
+[if(attackCounter == 3), code: {[h:MOD=MOD-5]</tr><tr>[h:attackCounter = 1]};{}]
+[if(attackCounter == 2), code: {<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>};{}]
+</td>
+
+
+
+<td>
+[h: damage = 2d10]
+[h: damage2= 2d10]
+[h: damage3= 2d10]
+[h: damage4=2d10]
+[h: extra = 0]
+[h: critextra = 3d8]
+
+[h: EnemyAC1 = TargetAC]
+<b>Attack {attackNumber}</b>:
+
+{attackColor}
+[h:ATK1 = 1d20]
+[t:ATK1+MOD]
+</font><td>vs {EnemyAC1}</td></td>
+
+[h: threat1=if(ATK1 >= ThreatRange,1,0)]
+[h: fail1=if(ATK1 == 1,1,0)]
+
+[h: hitstatus=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+[h: hitstatus=if(hitstatus == 1 && threat1 == 1, 3, hitstatus)]
+[h: hitstatus=if(fail1 == 1, 4, hitstatus)]
+
+<td>
+<b>{damageColor}
+[r, switch(hitstatus): 
+case 0: "</font>Miss!</td><td>";
+case 1: "Hit!";
+case 3: "Threat!";
+case 4: "</font>FAIL!!</td><td>"]
+</b>
+
+[h: hit1=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+
+[h: ATKcrit = 1d20]
+[if(hit1 == 1 && threat1 == 1), code: 
+{</td><td>Confirm: {attackColor} [t:ATKcrit+MOD+4] </font></td>};{</td><td>}]
+
+[h:fail1=if(ATKcrit==1,1,0)]
+
+[h: threat1=if(((ATKcrit+MOD+4) >= EnemyAC1 && fail1 == 0 && threat1 == 1)
+|| (ATKcrit == 20 && threat1 ==1),1,0)]
+</td>
+
+<td>
+[if((ATKcrit+MOD+4 >=EnemyAC1 && fail1 == 0 && threat1 == 1)||(ATKcrit == 20 && threat1 ==1)),code: {
+Crit Damage:</td><td> {damageColor}[t:damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra] </font>};{}]
+
+[if(hit1 == 1 && threat1 == 0), code: {Damage:</td><td> {damageColor} [t:(damage+damMod+extra)]</font>};{}]
+
+[h:totalDamage = totalDamage+if(hit1 == 1, if(threat1 == 1, (damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra), (damage+damMod+extra)),0)]
+
+[h:attackNumber = attackNumber+1]
+[h:attackCounter = attackCounter+1]
+[if(attackCounter == 3), code: {[h:MOD=MOD-5]</tr><tr>[h:attackCounter = 1]};{}]
+[if(attackCounter == 2), code: {<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>};{}]
+</td>
+
+
+
+<td>
+[h: damage = 2d10]
+[h: damage2= 2d10]
+[h: damage3= 2d10]
+[h: damage4=2d10]
+[h: extra = 0]
+[h: critextra = 3d8]
+
+[h: EnemyAC1 = TargetAC]
+<b>Attack {attackNumber}</b>:
+
+{attackColor}
+[h:ATK1 = 1d20]
+[t:ATK1+MOD]
+</font><td>vs {EnemyAC1}</td></td>
+
+[h: threat1=if(ATK1 >= ThreatRange,1,0)]
+[h: fail1=if(ATK1 == 1,1,0)]
+
+[h: hitstatus=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+[h: hitstatus=if(hitstatus == 1 && threat1 == 1, 3, hitstatus)]
+[h: hitstatus=if(fail1 == 1, 4, hitstatus)]
+
+<td>
+<b>{damageColor}
+[r, switch(hitstatus): 
+case 0: "</font>Miss!</td><td>";
+case 1: "Hit!";
+case 3: "Threat!";
+case 4: "</font>FAIL!!</td><td>"]
+</b>
+
+[h: hit1=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+
+[h: ATKcrit = 1d20]
+[if(hit1 == 1 && threat1 == 1), code: 
+{</td><td>Confirm: {attackColor} [t:ATKcrit+MOD+4] </font></td>};{</td><td>}]
+
+[h:fail1=if(ATKcrit==1,1,0)]
+
+[h: threat1=if(((ATKcrit+MOD+4) >= EnemyAC1 && fail1 == 0 && threat1 == 1)
+|| (ATKcrit == 20 && threat1 ==1),1,0)]
+</td>
+
+<td>
+[if((ATKcrit+MOD+4 >=EnemyAC1 && fail1 == 0 && threat1 == 1)||(ATKcrit == 20 && threat1 ==1)),code: {
+Crit Damage:</td><td> {damageColor}[t:damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra] </font>};{}]
+
+[if(hit1 == 1 && threat1 == 0), code: {Damage:</td><td> {damageColor} [t:(damage+damMod+extra)]</font>};{}]
+
+[h:totalDamage = totalDamage+if(hit1 == 1, if(threat1 == 1, (damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra), (damage+damMod+extra)),0)]
+
+[h:attackNumber = attackNumber+1]
+[h:attackCounter = attackCounter+1]
+[if(attackCounter == 3), code: {[h:MOD=MOD-5]</tr><tr>[h:attackCounter = 1]};{}]
+[if(attackCounter == 2), code: {<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>};{}]
+</td>
+
+
+
+
+<td>
+[h: MOD = AttackMod+AtkMod+2]
+[h: damage = 2d10]
+[h: damage2= 2d10]
+[h: damage3= 2d10]
+[h: damage4=2d10]
+[h: extra = 0]
+[h: critextra = 3d8]
+
+[h: EnemyAC1 = TargetAC]
+<b>Attack {attackNumber}</b>:
+
+{attackColor}
+[h:ATK1 = 1d20]
+[t:ATK1+MOD]
+</font><td>vs {EnemyAC1}</td></td>
+
+[h: threat1=if(ATK1 >= ThreatRange,1,0)]
+[h: fail1=if(ATK1 == 1,1,0)]
+
+[h: hitstatus=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+[h: hitstatus=if(hitstatus == 1 && threat1 == 1, 3, hitstatus)]
+[h: hitstatus=if(fail1 == 1, 4, hitstatus)]
+
+<td>
+<b>{damageColor}
+[r, switch(hitstatus): 
+case 0: "</font>Miss!</td><td>";
+case 1: "Hit!";
+case 3: "Threat!";
+case 4: "</font>FAIL!!</td><td>"]
+</b>
+
+[h: hit1=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+
+[h: ATKcrit = 1d20]
+[if(hit1 == 1 && threat1 == 1), code: 
+{</td><td>Confirm: {attackColor} [t:ATKcrit+MOD+4] </font></td>};{</td><td>}]
+
+[h:fail1=if(ATKcrit==1,1,0)]
+
+[h: threat1=if(((ATKcrit+MOD+4) >= EnemyAC1 && fail1 == 0 && threat1 == 1)
+|| (ATKcrit == 20 && threat1 ==1),1,0)]
+</td>
+
+<td>
+[if((ATKcrit+MOD+4 >=EnemyAC1 && fail1 == 0 && threat1 == 1)||(ATKcrit == 20 && threat1 ==1)),code: {
+Crit Damage:</td><td> {damageColor}[t:damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra] </font>};{}]
+
+[if(hit1 == 1 && threat1 == 0), code: {Damage:</td><td> {damageColor} [t:(damage+damMod+extra)]</font>};{}]
+
+[h:totalDamage = totalDamage+if(hit1 == 1, if(threat1 == 1, (damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra), (damage+damMod+extra)),0)]
+
+[h:attackNumber = attackNumber+1]
+[h:attackCounter = attackCounter+1]
+[if(attackCounter == 3), code: {[h:MOD=MOD-5]</tr><tr>[h:attackCounter = 1]};{}]
+[if(attackCounter == 2), code: {<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>};{}]
+</td>
+
+
+[r:if(getProperty("Haste")>0, CODE: {
+
+<td>
+[h: MOD = AttackMod+AtkMod+2]
+[h: damage = 2d10]
+[h: damage2= 2d10]
+[h: damage3= 2d10]
+[h: damage4=2d10]
+[h: extra = 0]
+[h: critextra = 3d8]
+
+[h: EnemyAC1 = TargetAC]
+<b>Attack {attackNumber}</b>:
+
+{attackColor}
+[h:ATK1 = 1d20]
+[t:ATK1+MOD]
+</font><td>vs {EnemyAC1}</td></td>
+
+[h: threat1=if(ATK1 >= ThreatRange,1,0)]
+[h: fail1=if(ATK1 == 1,1,0)]
+
+[h: hitstatus=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+[h: hitstatus=if(hitstatus == 1 && threat1 == 1, 3, hitstatus)]
+[h: hitstatus=if(fail1 == 1, 4, hitstatus)]
+
+<td>
+<b>{damageColor}
+[r, switch(hitstatus): 
+case 0: "</font>Miss!</td><td>";
+case 1: "Hit!";
+case 3: "Threat!";
+case 4: "</font>FAIL!!</td><td>"]
+</b>
+
+[h: hit1=if(((ATK1+MOD) >= EnemyAC1 && fail1 == 0) || ATK1 == 20,1,0)]
+
+[h: ATKcrit = 1d20]
+[if(hit1 == 1 && threat1 == 1), code: 
+{</td><td>Confirm: {attackColor} [t:ATKcrit+MOD+4] </font></td>};{</td><td>}]
+
+[h:fail1=if(ATKcrit==1,1,0)]
+
+[h: threat1=if(((ATKcrit+MOD+4) >= EnemyAC1 && fail1 == 0 && threat1 == 1)
+|| (ATKcrit == 20 && threat1 ==1),1,0)]
+</td>
+
+<td>
+[if((ATKcrit+MOD+4 >=EnemyAC1 && fail1 == 0 && threat1 == 1)||(ATKcrit == 20 && threat1 ==1)),code: {
+Crit Damage:</td><td> {damageColor}[t:damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra] </font>};{}]
+
+[if(hit1 == 1 && threat1 == 0), code: {Damage:</td><td> {damageColor} [t:(damage+damMod+extra)]</font>};{}]
+
+[h:totalDamage = totalDamage+if(hit1 == 1, if(threat1 == 1, (damage+damage2+damage3+damage4+(damMod*critMult)+extra+critextra), (damage+damMod+extra)),0)]
+
+[h:attackNumber = attackNumber+1]
+[h:attackCounter = attackCounter+1]
+[if(attackCounter == 3), code: {[h:MOD=MOD-5]</tr><tr>[h:attackCounter = 1]};{}]
+[if(attackCounter == 2), code: {<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>};{}]
+</td>
+
+};,""]
+
+
+
+
+
+
+</tr></table><br/><b>Total Damage: {damageColor}{totalDamage}</font></b>

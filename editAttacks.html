@@ -1,0 +1,58 @@
+<!-- GM password is: 7705
+Since you'll have to start here next time -->
+<!-- The idea is that we can initialize all the vars 
+up here, and pull them from args.  The form should call
+this function again until it's complete
+Not sure what 'complete' means yet tho.  I guess when
+the last entry isn't default.  
+
+Actually tho.  First, we ask NumAttacks, attackName, Cost
+Then a next button to another whole 'sheet' where 
+we prepare a table of each attack and its bonus and damage
+That sheet then does the submission and saving.
+This table should include separate range for each attack
+Since any attack may be with multiple weapons
+
+We can store those attacks as something like
+_flurryKi_Attack2Damage etc and reference them later
+
+With either, any variable can be set up by putting the
+getProperty() inside the field
+
+
+<tr><th>Cost:</th><td><input name="costValue" value=""></input> of this Variable: <input name="costVariable" value=""></input></td></tr>
+<tr><td colspan=2>Enter the name of the pool to subtract from
+<br>For example, entering "1" and "Ki" would work
+<br>You can always leave the cost blank
+<br>We'll fine-tune the details in the next step.
+</td></tr>
+-->
+
+[dialog("attackInput3", "width=300; height=400;"): {
+
+<html>
+<head>
+<title>Attack Editor</title>
+<link rel="stylesheet" type="text/css" href="CharSheet_css@[r: getMacroLocation()]">
+<meta name="input" content="true">
+</head>
+<body>
+<form name="inputAttacks" action="[r:macroLinkText('editAttacks2@Lib:Test')]">
+<table class="mainTables"> <!-- Start input table -->
+<tr><th>Attack Name:</th><td><input name="AttackName" value="Basic Attack"></input></td></tr>
+<tr><th>Number of Attacks:</th><td><input name="numAttacks" value="1"></input></td></tr>
+<tr><th>Base Damage Dice:</th><td><input name="AttackDamageBase" value="2d10"></input></td></tr>
+<tr><th>Cost Amount:</th><td><input name="costValue" value=""></input></td></tr>
+<tr><th>Cost Pool:</th><td><input name="costVariable" value=""></input></td></tr>
+<tr><td colspan=2>Enter the name of the pool to subtract from
+<br>For example, entering 1 and Ki would work
+<br>You can always leave the cost blank
+<br>We will fine-tune the details in the next step.
+</td></tr>
+<tr><td><input type="submit" name="submit" value="Next"></input></td></tr>
+</table> <!-- End input table -->
+</form>
+</body>
+</html>
+
+}]
